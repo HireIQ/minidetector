@@ -1,6 +1,5 @@
-from django.conf import settings
-
 from minidetector.useragents import search_strings
+
 
 class Middleware(object):
     @staticmethod
@@ -19,16 +18,16 @@ class Middleware(object):
         request.is_wide_device = True
         request.is_windows_phone_device = False
 
-        if request.META.has_key("HTTP_X_OPERAMINI_FEATURES"):
-            #Then it's running opera mini. 'Nuff said.
-            #Reference from:
+        if "HTTP_X_OPERAMINI_FEATURES" in request.META:
+            # Then it's running opera mini. 'Nuff said.
+            # Reference from:
             # http://dev.opera.com/articles/view/opera-mini-request-headers/
 
             request.is_simple_device = True
 
             return None
 
-        if request.META.has_key("HTTP_ACCEPT"):
+        if "HTTP_ACCEPT" in request.META:
             s = request.META["HTTP_ACCEPT"].lower()
             if 'application/vnd.wap.xhtml+xml' in s:
                 # Then it's a wap browser
@@ -37,7 +36,7 @@ class Middleware(object):
 
                 return None
 
-        if request.META.has_key("HTTP_USER_AGENT"):
+        if "HTTP_USER_AGENT" in request.META:
             # This takes the most processing. Surprisingly enough, when I
             # Experimented on my own machine, this was the most efficient
             # algorithm. Certainly more so than regexes.
@@ -65,14 +64,14 @@ class Middleware(object):
             if 'android' in s:
                 request.is_android_device = True
                 request.is_touch_device = True
-                request.is_wide_device = False # TODO add support for andriod tablets
+                request.is_wide_device = False  # TODO add support for andriod tablets
 
                 return None
 
             if 'webos' in s:
                 request.is_webos_device = True
                 request.is_touch_device = True
-                request.is_wide_device = False # TODO add support for webOS tablets
+                request.is_wide_device = False  # TODO add support for webOS tablets
 
                 return None
 
@@ -89,6 +88,7 @@ class Middleware(object):
                     return None
 
         return None
+
 
 def detect_mobile(view):
     """ View Decorator that adds a "mobile" attribute to the request which is
